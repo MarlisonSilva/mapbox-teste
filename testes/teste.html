@@ -50,7 +50,7 @@
         const map = new mapboxgl.Map({
             container: 'map', // container ID
             style: 'mapbox://styles/mapbox/streets-v11', // style URL
-            center: [-122.486052, 37.830348], // starting position [lng, lat]
+            center: [-37.3464802, -6.3806815], // starting position [lng, lat]
             zoom: 9 // starting zoom
         });
 
@@ -101,7 +101,7 @@
                 if ('geolocation' in navigator) {
                     navigator.geolocation.getCurrentPosition(position => {
 
-                        var coord = [position.coords.latitude, position.coords.longitude];
+                        var coord = [position.coords.longitude, position.coords.latitude];
                         if (coord[0] != coords[coords.length - 1][0] || coord[1] != coords[coords.length - 1][1]) {
                             if (coords[coords.length - 1] == "Nada") {
                                 coords.pop();
@@ -139,7 +139,7 @@
                                         },
                                         'paint': {
                                             'line-color': '#9f00ff',
-                                            'line-width': 3
+                                            'line-width': 10
                                         }
                                     });
                                 }
