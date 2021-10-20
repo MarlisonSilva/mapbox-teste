@@ -31,8 +31,10 @@
 
 <body>
     <div id="map"></div>
-    <div id="position">AAAAA</div>
+    <div id="position">Localize-se!</div>
+    <div id="allPositions">Localize-se!</div>
     <script>
+        var isGeolocating = false;
         mapboxgl.accessToken = 'pk.eyJ1Ijoia2FuYXNoaWkxNiIsImEiOiJja2VydDgzM3MyMGxtMzJvOHdjZmY4NHN5In0.sXfYsFWtUR_0C2OQtUo7nQ';
         const map = new mapboxgl.Map({
             container: 'map', // container ID
@@ -60,61 +62,28 @@
             // var teste = [['a', 'aa'], ['b', 'bb'], ['c', 'cc']];
             var coords = [['Nada']]
             console.log('A geolocalização está ocorrendo!');
-            if ("geolocation" in navigator) {
+            if ('geolocation' in navigator) {
                 navigator.geolocation.getCurrentPosition(position => {
                     console.log(position.coords.latitude, position.coords.longitude);
                     var coordAux = [position.coords.latitude, position.coords.longitude];
+                    
                     if (!(coordAux[0] == coords[coords.length - 1][0] && coordAux[1] == coords[coords.length - 1][1])) {
-                        if (coords[coords.length - 1][0] == "Nada") {
-                            var ultimo = coords.pop();
-                        }      
-                                          
+                        // if (coords[coords.length - 1] == "Nada") {
+                        //     var ultimo = coords.pop();
+                        // }
+
                         var adicionar = coords.push(coordAux);
 
                     } else {
-                        console.log('última coord '+ coords[coords.length - 1]);
+                        console.log('Última coord ' + coords[coords.length - 1]);
                     }
-                    
+
                     const positionDisplay = document.body.querySelector('#position');
-                    positionDisplay.innerHTML = 'Última posição: '+ coords[coords.length - 1] + '<br>' + 'Todas as posições: '+ coords;
-                    
+                    const allPositionsDisplay = document.body.querySelector('#allPositions');
 
+                    positionDisplay.innerHTML = 'Última posição: ' + coords[coords.length - 1];
+                    allPositionsDisplay.innerHTML = 'Todas as posições: ' + coords;
 
-
-
-
-                    function geolocating() {
-
-                        map.addSource('rotaSource', {
-                            'type': 'geojson',
-                            'data': {
-                                'type': 'Feature',
-                                'properties': {},
-                                'geometry': {
-                                    'type': 'LineString',
-                                    'coordinates': [
-                                        [position.coords.latitude, position.coords.longitude]
-                                    ]
-                                }
-                            }
-                        });
-
-                        map.addLayer({
-                            'id': 'rota',
-                            'type': 'line',
-                            'source': 'rotaSource',
-                            'layout': {
-                                'line-join': 'round',
-                                'line-cap': 'round'
-                            },
-                            'paint': {
-                                'line-color': '#9f00ff',
-                                'line-width': 3
-                            }
-                        });
-
-                        setTimeout(geolocating, 1000);
-                    }
                 });
 
             } else {
@@ -122,6 +91,50 @@
             }
 
         });
+
+        geolocate.on('trackuserlocationstart', () => {
+            isGeolocating = true;
+
+
+        });
+
+        geolocate.on('trackuserlocationend', () => {
+            isGeolocating = false;
+        });
+
+        function geolocating () {
+            map.addSource('rotaSource', {
+                'type': 'geojson',
+                'data': {
+                    'type': 'Feature',
+                    'properties': {},
+                    'geometry': {
+                        'type': 'LineString',
+                        'coordinates': [
+                            [position.coords.latitude, position.coords.longitude]
+                        ]
+                    }
+                }
+            });
+
+            map.addLayer({
+                'id': 'rota',
+                'type': 'line',
+                'source': 'rotaSource',
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-color': '#9f00ff',
+                    'line-width': 3
+                }
+            });
+
+            if (isGeolocating) {
+                setTimeout(geolocating, 1000);
+            }
+        }
 
         map.on('load', () => {
 
