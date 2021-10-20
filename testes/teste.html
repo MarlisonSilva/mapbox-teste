@@ -72,13 +72,13 @@
             if ('geolocation' in navigator) {
                 navigator.geolocation.getCurrentPosition(position => {
                     console.log(position.coords.latitude, position.coords.longitude);
-                    var coordAux = [position.coords.latitude, position.coords.longitude];
+                    var coord = [position.coords.latitude, position.coords.longitude];
                     
-                    if (!(coordAux[0] == coords[coords.length - 1][0] && coordAux[1] == coords[coords.length - 1][1])) {
-                        // if (coords[coords.length - 1] == "Nada") {
-                        //     var ultimo = coords.pop();
-                        // }
-
+                    if (!(coord[0] == coords[coords.length - 1][0] && coord[1] == coords[coords.length - 1][1])) {
+                        if (coords[coords.length - 1] == "Nada") {
+                            var ultimo = coords.pop();
+                        }
+                        var coordAux = coord.slice();
                         var adicionar = coords.push(coordAux);
 
                     } else {
