@@ -92,7 +92,7 @@
                 clearInterval(intervalGeolocating);
 
                 isGeolocating = false;
-                coords = [['Nada']];
+                this.coords = [['Nada']];
             }
         });
 
@@ -102,68 +102,74 @@
                     navigator.geolocation.getCurrentPosition(position => {
 
                         var coord = [position.coords.longitude, position.coords.latitude];
-                        if (coord[0] != coords[coords.length - 1][0] || coord[1] != coords[coords.length - 1][1]) {
-                            if (coords[coords.length - 1] == "Nada") {
-                                coords.pop();
+                        if (coord[0] != this.coords[this.coords.length - 1][0] || coord[1] != this.coords[this.coords.length - 1][1]) {
+                            if (this.coords[coords.length - 1] == "Nada") {
+                                this.coords.pop();
                             }
                             coords.push(coord);
-
-                            if (map.getSource('rotaSource') == undefined || !(coords.length > 1)) {
-
-                                map.addSource('rotaSource', {
-                                    'type': 'geojson',
-                                    'data': {
-                                        'type': 'Feature',
-                                        'properties': {},
-                                        'geometry': {
-                                            'type': 'LineString',
-                                            'coordinates': coords
-                                        }
-                                    }
-                                });
-                            } else {
-                                map.getSource('rotaSource')._data.geometry.coordinates = coords;
-                                console.log(coords);
-                                console.log(map.getSource('rotaSource')._data.geometry.coordinates);
+                            // this.coords = [[-37.3464802, -6.3806815], [-37.3464802, -7.3806815]];
+                            if (coords.length > 1) {
+                                doLine(this.coords);                                
                             }
-
-                            if (map.getLayer('rota') == undefined) {
-                                if (map.getSource('rotaSource') != undefined) {
-                                    map.addLayer({
-                                        'id': 'rota',
-                                        'type': 'line',
-                                        'source': 'rotaSource',
-                                        'layout': {
-                                            'line-join': 'round',
-                                            'line-cap': 'round'
-                                        },
-                                        'paint': {
-                                            'line-color': '#9f00ff',
-                                            'line-width': 10
-                                        }
-                                    });
-                                }
-                            } else {
-                                // console.log(map.getLayer('rota'));
-                            }
-
+                            
                         } else {
-                            console.log('Última coord ' + coords[coords.length - 1]);
+                            console.log('Última coord ' + this.coords[this.coords.length - 1]);
                         }
 
                         const positionDisplay = document.body.querySelector('#position');
                         const allPositionsDisplay = document.body.querySelector('#allPositions');
 
-                        positionDisplay.innerHTML = 'Última posição: ' + coords[coords.length - 1];
-                        allPositionsDisplay.innerHTML = 'Todas as posições: ' + coords;
+                        positionDisplay.innerHTML = 'Última posição: ' + this.coords[this.coords.length - 1];
+                        allPositionsDisplay.innerHTML = 'Todas as posições: ' + this.coords;
 
                     });
 
                 } else {
                     console.log("Geolocation is not avaliable!")
                 }
+            }
+        }
 
+        function doLine(coordsLine) {
+            if (map.getSource('rotaSource') == undefined) {
 
+                map.addSource('rotaSource', {
+                    'type': 'geojson',
+                    'data': {
+                        'type': 'Feature',
+                        'properties': {},
+                        'geometry': {
+                            'type': 'LineString',
+                            'coordinates': coordsLine
+                        }
+                    }
+                });
+
+                console.log(map.getSource('rotaSource'));
+            } else {
+                map.getSource('rotaSource')._data.geometry.coordinates = coordsLine;
+                console.log(coordsLine);
+                console.log(map.getSource('rotaSource')._data.geometry.coordinates);
+            }
+
+            if (map.getLayer('rota') == undefined) {
+                if (map.getSource('rotaSource') != undefined) {
+                    map.addLayer({
+                        'id': 'rota',
+                        'type': 'line',
+                        'source': 'rotaSource',
+                        'layout': {
+                            'line-join': 'round',
+                            'line-cap': 'round'
+                        },
+                        'paint': {
+                            'line-color': '#9f00ff',
+                            'line-width': 10
+                        }
+                    });
+                }
+            } else {
+                // console.log(map.getLayer('rota'));
             }
         }
 
