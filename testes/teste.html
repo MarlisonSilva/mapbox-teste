@@ -71,6 +71,7 @@
 
         geolocate.on('trackuserlocationstart', () => {
             isGeolocating = true;
+            geolocating();
         });
 
         geolocate.on('trackuserlocationend', () => {
